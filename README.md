@@ -8,28 +8,22 @@ Los bloques estarán ordenados en base a un espacio de coordenadas de mano izqui
 
 En cuanto al lenguaje, tendremos una serie de instrucciones básicas de movimiento del "cursor" (que estará representado por un modelo más amigable).
 
-Nuestro compilador, que estará basado en WebAssembly y compilado a partir de la salida de BISON, generará una serie de pasos a seguir que serán visualizados y renderizados en la web.
+Nuestro compilador, que estará compilado a WebAssembly a partir de la salida de BISON, generará una lista de estados que serán visualizados y renderizados en la web.
 
-El lenguaje estará compuesto por las siguientes instrucciones: 
-- Forwards
-- Backwards 
-- Right
-- Left
-- Up
-- Down
-- setCube(RGBA)
+Para interactuar con el estado, usarán built-ins:
+- Mover
+  - Arriba
+  - Abajo
+  - Izquierda
+  - Derecha
+  - Adelante
+  - Atras
+- Modificar cubo (RGBA)
 
-Es cierto que las instrucciones de movimiento podrían tomar como argumento la repetición, pero si planteamos esta herramienta como una herramienta de aprendizaje debemos evitar las funciones inicialmente, pudiendo añadirlas a futuro.
+Aparte de eso, mecanismos para hacer bucles y condicionales.
+- Ejecución condicional
+- Iteración
 
-
-Aparte de eso, contaremos con unas estructuras de control que nos permitirán hacer los bucles y condicionales.
-
-if
-while (?)
-for (?)
-loop/break(?)
-
-Nuestro lenguaje no cuenta con "true" o "false" explícitamente, sino que los condicionales se evalúan y controlan la ejecución sin hacer una reducción a true o false.
-
+Nuestro lenguaje no cuenta con booleanos explícitamente, sino que los condicionales se evalúan y controlan la ejecución sin hacer una reducción a true o false.
 
 Trataremos todos los errores sintácticos y semánticos que detectemos a través de feedback de cara al usuario a través de la UI, indicando la línea que produce el error. En vez de mandar el mensaje con la representación del estado al código JavaScript, tendremos mensajes especiales para señalar el error.
