@@ -1,0 +1,73 @@
+parser grammar ExprParser;
+options { tokenVocab=ExprLexer; }
+
+program : stat* EOF ;
+
+stat
+    : func
+    | expr
+    ;
+
+expr
+    : op
+    | func_call
+    | bind
+    | if
+    | for
+    | block
+    | val
+    | lit
+    ;
+
+block 
+    : '{' stat* expr '}'
+    ;
+
+pat : ID (',' ID)* ;
+
+func : LET ID '=' '(' pat ')' block ;
+
+val
+    : INT
+    | ID
+    ;
+
+func_call
+    : lit '.' ID
+    | lit '.' ID '(' expr (',' expr)* ')'
+    ;
+
+bind 
+    : 'let' ID '=' expr 
+    | ID '=' expr
+    ;
+
+lit
+    : '['']'
+    | '[' val (',' val)* ']'
+    | val
+    ;
+
+op : lit int_op lit;
+
+int_op
+    : '+'
+    | '-'
+    | '*'
+    | '/'
+    ;
+
+if : '(' expr comp_op expr ')' expr ;
+for : '(' expr iter_op expr ')' expr ;
+
+
+
+comp_op
+    : '<'
+    | '>'
+    | '='
+    ;
+
+iter_op
+    : '->'
+    ;

@@ -1,0 +1,34 @@
+// DELETE THIS CONTENT IF YOU PUT COMBINED GRAMMAR IN Parser TAB
+lexer grammar ExprLexer;
+
+WS: [ \t\n\r\f]+ -> skip ;
+COMMENT : '//'.*?[\n] -> skip;
+
+LET : 'let'  ;
+FN : 'fn' ;
+ID: [a-zA-Z][a-zA-Z_0-9]* ;
+INT : [0-9]+ ;
+
+LPAREN : '(' ;
+RPAREN : ')' ;
+LCURLY : '{' ;
+RCURLY : '}' ;
+LSQARE : '[' ;
+RSQARE : ']' ;
+COMMA  : ',' ;
+
+ITER : '->';
+END : ';';
+
+EQ : '=' ;
+LT : '<' ;
+GT : '>' ;
+DOT : '.';
+
+ADD : '+';
+MUL : '*';
+SUB : '-';
+DIV : '/';
+
+
+
