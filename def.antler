@@ -8,13 +8,19 @@ stat
     | expr
     ;
 
-expr
-    : op
-    | func_call
+expr // reduce to a val (mostly)
+     // val can be the ID of a func 
+     // MAYBE differenciate funcs from vars
+    : call
     | bind
     | if
     | for
     | block
+    | simp
+    ;
+
+simp
+    : arith
     | val
     | lit
     ;
@@ -23,18 +29,20 @@ block
     : '{' stat* expr '}'
     ;
 
-pat : ID (',' ID)* ;
+pat 
+    : ID (',' ID)* (','REST ID)?
+    | REST ID
+    ;
 
-func : LET ID '=' '(' pat ')' block ;
+func : LET ID '=' '(' pat? ')' block ;
 
 val
     : INT
     | ID
     ;
 
-func_call
+call
     : lit '.' ID
-    | lit '.' ID '(' expr (',' expr)* ')'
     ;
 
 bind 
@@ -42,13 +50,18 @@ bind
     | ID '=' expr
     ;
 
+
 lit
     : '['']'
-    | '[' val (',' val)* ']'
+    | '[' simp (',' simp)* ']'
     | val
     ;
 
-op : lit int_op lit;
+
+
+arith : val int_op val;
+if  : '(' expr comp_op expr ')' expr ;
+for : '[' expr iter_op expr ']' expr ;
 
 int_op
     : '+'
@@ -56,11 +69,6 @@ int_op
     | '*'
     | '/'
     ;
-
-if : '(' expr comp_op expr ')' expr ;
-for : '(' expr iter_op expr ')' expr ;
-
-
 
 comp_op
     : '<'
@@ -71,3 +79,6 @@ comp_op
 iter_op
     : '->'
     ;
+
+
+
