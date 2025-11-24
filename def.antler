@@ -1,84 +1,80 @@
 parser grammar ExprParser;
 options { tokenVocab=ExprLexer; }
 
-program : stat* EOF ;
+program : top* EOF ;
 
-stat
+top
     : func
-    | expr
-    ;
-
-expr // reduce to a val (mostly)
-     // val can be the ID of a func 
-     // MAYBE differenciate funcs from vars
-    : call
     | bind
-    | if
-    | for
-    | block
-    | simp
     ;
 
-simp
-    : arith
-    | val
-    | lit
-    ;
+expr
+	: bind
+	| if
+	| for
+	| block
+	| oper
+	| func
+	;
 
-block 
-    : '{' stat* expr '}'
-    ;
+fval  // fval.func
+	: lit
+	| ID
+	;
 
-pat 
-    : ID (',' ID)* (','REST ID)?
+lit
+	: '['']'
+	| '[' expr (',' expr)* ']'
+	| INT
+	;
+
+bind
+	: LET ID '=' expr
+	| ID '=' expr
+	;
+
+pat
+    : ID (',' ID)* (',' REST ID)?
     | REST ID
     ;
 
-func : LET ID '=' '(' pat? ')' block ;
-
-val
-    : INT
-    | ID
-    ;
+func
+	: FN ID '(' pat? ')' block
+	;
 
 call
-    : lit '.' ID
-    ;
+	: fval '.' ID
+	| '.' ID
+	;
 
-bind 
-    : 'let' ID '=' expr 
-    | ID '=' expr
-    ;
-
-
-lit
-    : '['']'
-    | '[' simp (',' simp)* ']'
-    | val
-    ;
+block
+	: '{' expr* '}'
+	;
 
 
+if  : '(' oper comp_op oper ')' expr ;
+for : '[' oper iter_op oper ']' expr ;
 
-arith : val int_op val;
-if  : '(' expr comp_op expr ')' expr ;
-for : '[' expr iter_op expr ']' expr ;
-
-int_op
-    : '+'
-    | '-'
-    | '*'
-    | '/'
+oper 
+    : oper int_op oper
+    | call
+    | fval
     ;
 
 comp_op
-    : '<'
-    | '>'
-    | '='
-    ;
+	: '>'
+	| '<'
+	| '='
+	;
 
 iter_op
-    : '->'
-    ;
+	: '->'
+	;
 
-
+int_op
+	: '+'
+	| '-'
+	| '*'
+	| '/'
+	;
 

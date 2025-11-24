@@ -4,13 +4,10 @@ lexer grammar ExprLexer;
 WS: [ \t\n\r\f]+ -> skip ;
 COMMENT : '//'.*?[\n] -> skip;
 
-LET : 'let'  ;
+LET : 'let' ;
 FN : 'fn' ;
 ID: [@a-zA-Z][a-zA-Z_0-9]* ;
 INT : [0-9]+ ;
-
-
-
 
 LPAREN : '(' ;
 RPAREN : ')' ;
@@ -22,12 +19,12 @@ COMMA  : ',' ;
 
 ITER : '->';
 END : ';';
-
+DEF : ':';
 EQ : '=' ;
 LT : '<' ;
 GT : '>' ;
-DOT : '.';
 REST: '..';
+DOT : '.';
 
 ADD : '+';
 MUL : '*';
