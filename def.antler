@@ -39,7 +39,8 @@ pat
     ;
 
 func
-	: FN ID '(' pat? ')' block
+	: FN ID '|' pat '|' block
+	| FN ID block
 	;
 
 call

@@ -9,6 +9,7 @@ FN : 'fn' ;
 ID: [@a-zA-Z][a-zA-Z_0-9]* ;
 INT : [0-9]+ ;
 
+LINE  : '|' ;
 LPAREN : '(' ;
 RPAREN : ')' ;
 LCURLY : '{' ;
