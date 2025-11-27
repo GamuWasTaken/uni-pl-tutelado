@@ -33,11 +33,11 @@ call_expr
     ;
 
 mul_expr
-    : call_expr (('+'|'-') call_expr)*
+    : call_expr (('*'|'/') call_expr)*
     ;
 
 add_expr
-    : mul_expr (('*'|'/') mul_expr)*
+    : mul_expr (('+'|'-') mul_expr)*
     ;
 
 comp_expr
