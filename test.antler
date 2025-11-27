@@ -17,13 +17,13 @@ let v = [1,2,3].rev // to call functions just use .func
 let b = 1.rev       // err, rev expects 3 arguments, '1' has len 1
 
 fn branchs |x| {
-	(x = 3) 0              // Simple if, block is ran if x < 3
-	(x > 2) (x < 10) { 0 } // And is just chaining
+    (x = 3) 0              // Simple if, block is ran if x < 3
+    (x > 2) (x < 10) 0 // And is just chaining
 }
 
 fn sum |..arr| { // use .. to accept any array len
-	let sum = 0
-	[arr -> x] sum = sum + x // expr runs for each element in arr
+    let sum = 0
+    [arr -> x] sum = sum + x // expr runs for each element in arr
 }
 
 fn nesting {
@@ -46,8 +46,8 @@ fn slice |from, to, ..arr| {
 }
 
 fn range |from, to, step| { // function signatures are <name>/<paramlen> -> range/3
-    let out = [from]
-    [out -> e] (e > to) {
+    let out = from
+    [out -> e] (e < to) {
         out = [out, e + step]
     }
     out
