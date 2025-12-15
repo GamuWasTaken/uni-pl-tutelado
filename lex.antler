@@ -14,13 +14,11 @@ LPAREN : '(' ;
 RPAREN : ')' ;
 LCURLY : '{' ;
 RCURLY : '}' ;
-LSQARE : '[' ;
-RSQARE : ']' ;
+LBRACK : '[' ;
+RBRACK : ']' ;
 COMMA  : ',' ;
 
 ITER : '->';
-END : ';';
-DEF : ':';
 EQ : '=' ;
 LT : '<' ;
 GT : '>' ;
@@ -31,5 +29,5 @@ ADD : '+';
 MUL : '*';
 SUB : '-';
 DIV : '/';
-
+MOD : '%';
 
