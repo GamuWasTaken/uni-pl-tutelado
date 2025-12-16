@@ -2,11 +2,10 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "syn.repli.h"
+#include "codevoxels.syn.h"
 %}
 
 %option yylineno
-%option header-file="lex.repli.h"
 
 %%
 
