@@ -43,15 +43,34 @@ _name _name##_concat(_name a, _name b) {                    \
 }                                                           \
 
 #define _IMPL_ARRAY_FREE(_type, _name) \
-void _name##_free(_name arr) {         \
-  if(arr.data == NULL) return;         \
-  free(arr.data);                      \
+void _name##_free(_name *arr) {        \
+  if(arr->data == NULL) return;        \
+  free(arr->data);                     \
+  arr->data = NULL;                    \
+  arr->len = 0;                        \
 }                                      \
 
-#define IMPL_ARRAY(_type, _name)   \
-DEF_ARRAY(_type, _name)            \
-_IMPL_ARRAY_NEW(_type, _name)      \
-_IMPL_ARRAY_OF_SINGLE(_type, _name)\
-_IMPL_ARRAY_CONCAT(_type, _name)   \
-_IMPL_ARRAY_FREE(_type, _name)     \
+#define _IMPL_ARRAY_PRINT(_type, _name)               \
+void _name##_print(_name arr, void (*print)(_type)) { \
+  printf("_name""[ ");                                \
+  for(int i = 0; i < arr.len; i++) {                  \
+    print(arr.data[i]);                               \
+    printf(",");                                      \
+  }                                                   \
+  printf("]\n");                                      \
+}                                                     \
+
+#define _IMPL_ARRAY_EMPTY(_type, _name) \
+_name _name##_empty() {                 \
+  return _name##_new(0, NULL);          \
+}                                       \
+
+#define IMPL_ARRAY(_type, _name)    \
+DEF_ARRAY(_type, _name)             \
+_IMPL_ARRAY_NEW(_type, _name)       \
+_IMPL_ARRAY_OF_SINGLE(_type, _name) \
+_IMPL_ARRAY_PRINT(_type, _name)     \
+_IMPL_ARRAY_EMPTY(_type, _name)     \
+_IMPL_ARRAY_CONCAT(_type, _name)    \
+_IMPL_ARRAY_FREE(_type, _name)      \
 

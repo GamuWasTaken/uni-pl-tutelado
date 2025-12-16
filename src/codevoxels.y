@@ -8,9 +8,9 @@
   Strs pat;
 }
 
-%token LET FN LINE LPAREN RPAREN LCURLY RCURLY LBRACK RBRACK COMMA ARROW EQ LT GT REST DOT PLUS STAR DASH DIV MOD
-%token <text> ID
-%token <value> INT
+%token let fn line lparen rparen lcurly rcurly lbrack rbrack comma arrow eq lt gt rest dot plus star dash div mod
+%token <text> id
+%token <value> int
 
 %type <value> TOP EXPR SIMP CALL MUL SUM COMP ITER BLOCK FUNC BIND
 
@@ -37,24 +37,30 @@ EXPR
   | BIND {}
 ;
 
-COMP_OP : LT | GT | EQ ;
-MUL_OP  : STAR | DIV ;
-SUM_OP  : PLUS | DASH ;
+COMP_OP : lt | gt | eq ;
+MUL_OP  : star | div | mod ;
+SUM_OP  : plus | dash ;
 
 SUM_LIST
-  : SUM_LIST COMMA SUM {}
-  | {}
+  : SUM_LIST comma SUM
+    {
+      Ints val = Ints_concat($1, $2);
+      Ints_free($1);
+      Ints_free($2);
+      return val;
+    }
+  | { return Ints_empty(); }
 ;
 
 SIMP
-  : ID {}
-  | INT {}
-  | LBRACK RBRACK {}
-  | LBRACK SUM SUM_LIST RBRACK {}
+  : id {}
+  | int
+  | lbrack rbrack { Ints_empty(); }
+  | lbrack SUM SUM_LIST rbrack {}
 ;
 
 CALL_LIST
-  : CALL_LIST DOT ID {}
+  : CALL_LIST dot id {}
   | {}
 ;
 
@@ -81,11 +87,11 @@ SUM
 ;
 
 COMP
-  : LPAREN SUM COMP_OP SUM RPAREN EXPR {}
+  : lparen SUM COMP_OP SUM rparen EXPR {}
 ;
 
 ITER
-  : LBRACK SUM ARROW ID RBRACK EXPR {}
+  : lbrack SUM arrow id rbrack EXPR {}
 ;
 
 BLOCK_LIST
@@ -93,26 +99,26 @@ BLOCK_LIST
   | {}
 ;
 BLOCK
-  : LCURLY BLOCK_LIST RCURLY {}
+  : lcurly BLOCK_LIST rcurly {}
 ;
 
-ID_LIST
-  : ID_LIST COMMA ID {}
+id_LIST
+  : id_LIST comma id {}
   | {}
 ;
 
 PAT
-  : ID ID_LIST {}
-  | ID ID_LIST REST ID {}
-  | REST ID {}
+  : id id_LIST {}
+  | id id_LIST rest id {}
+  | rest id {}
 ;
 
 FUNC
-  : FN ID LINE PAT LINE BLOCK {}
-  | FN ID BLOCK {}
+  : fn id line PAT line BLOCK {}
+  | fn id BLOCK {}
 ;
 
 BIND
-  : LET ID EQ EXPR {}
-  | ID EQ EXPR {}
+  : let id eq EXPR {}
+  | id eq EXPR {}
 ;

@@ -37,7 +37,7 @@
 "%"   {return MOD   ;}
 
 [@a-zA-Z][a-zA-Z_0-9] { yyval.text = strdup(yytext); return ID; }
-[0-9]+ { yyval.value = array_of_int(atoi(yytext)); return INT; }
+[0-9]+ { yyval.value = Ints_of_single(atoi(yytext)); return INT; }
 
 "//".*"\n"   {;}
 [ \n\t\r\f]+ {;}
