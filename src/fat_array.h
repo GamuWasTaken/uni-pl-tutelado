@@ -3,11 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEF_ARRAY(_type, _name) \
+#define _DEF_ARRAY(_type, _name) \
 typedef struct {                \
   int len;                      \
   _type* data;                  \
 } _name;                        \
+
+#define _DEF_ARRAY_NEW(_type, _name)    \
+_name _name##_new(int len, _type* data); \
 
 #define _IMPL_ARRAY_NEW(_type, _name)         \
 _name _name##_new(int len, _type* data) {     \
@@ -24,10 +27,16 @@ _name _name##_new(int len, _type* data) {     \
   return arr;                                 \
 }                                             \
 
+#define _DEF_ARRAY_OF_SINGLE(_type, _name) \
+_name _name##_of_single(_type num);        \
+
 #define _IMPL_ARRAY_OF_SINGLE(_type, _name) \
 _name _name##_of_single(_type num) {        \
   return _name##_new(1, &num);              \
 }                                           \
+
+#define _DEF_ARRAY_CONCAT(_type, _name) \
+_name _name##_concat(_name a, _name b); \
 
 #define _IMPL_ARRAY_CONCAT(_type, _name)                    \
 _name _name##_concat(_name a, _name b) {                    \
@@ -42,6 +51,9 @@ _name _name##_concat(_name a, _name b) {                    \
   return arr;                                               \
 }                                                           \
 
+#define _DEF_ARRAY_FREE(_type, _name) \
+void _name##_free(_name *arr);        \
+
 #define _IMPL_ARRAY_FREE(_type, _name) \
 void _name##_free(_name *arr) {        \
   if(arr->data == NULL) return;        \
@@ -49,6 +61,9 @@ void _name##_free(_name *arr) {        \
   arr->data = NULL;                    \
   arr->len = 0;                        \
 }                                      \
+
+#define _DEF_ARRAY_PRINT(_type, _name)               \
+void _name##_print(_name arr, void (*print)(_type)); \
 
 #define _IMPL_ARRAY_PRINT(_type, _name)               \
 void _name##_print(_name arr, void (*print)(_type)) { \
@@ -60,17 +75,27 @@ void _name##_print(_name arr, void (*print)(_type)) { \
   printf("]\n");                                      \
 }                                                     \
 
+#define _DEF_ARRAY_EMPTY(_type, _name) \
+_name _name##_empty();                 \
+
 #define _IMPL_ARRAY_EMPTY(_type, _name) \
 _name _name##_empty() {                 \
   return _name##_new(0, NULL);          \
 }                                       \
 
 #define IMPL_ARRAY(_type, _name)    \
-DEF_ARRAY(_type, _name)             \
 _IMPL_ARRAY_NEW(_type, _name)       \
 _IMPL_ARRAY_OF_SINGLE(_type, _name) \
 _IMPL_ARRAY_PRINT(_type, _name)     \
 _IMPL_ARRAY_EMPTY(_type, _name)     \
 _IMPL_ARRAY_CONCAT(_type, _name)    \
 _IMPL_ARRAY_FREE(_type, _name)      \
+
+#define DEF_ARRAY(_type, _name)    \
+_DEF_ARRAY(_type, _name)           \
+_DEF_ARRAY_OF_SINGLE(_type, _name) \
+_DEF_ARRAY_PRINT(_type, _name)     \
+_DEF_ARRAY_EMPTY(_type, _name)     \
+_DEF_ARRAY_CONCAT(_type, _name)    \
+_DEF_ARRAY_FREE(_type, _name)      \
 

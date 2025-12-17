@@ -1,66 +1,91 @@
 %code requires {
-  #include "codevoxels.c"
+  #include "fat_array.h"
+
+  DEF_ARRAY(int, Ints);
+
+  typedef struct {
+    char* name;
+    Ints value;
+  } Bind;
+  DEF_ARRAY(Bind, Bindings);
+
+  int yylex(void);
+  void yyerror (char const *);
 }
+
+%{
+
+  #include "syn.h"
+  IMPL_ARRAY(int, Ints);
+  IMPL_ARRAY(Bind, Bindings);
+%}
 
 %union {
   char* text;
   Ints value;
-  Strs pat;
 }
 
-%token let fn line lparen rparen lcurly rcurly lbrack rbrack comma arrow eq lt gt rest dot plus star dash div mod
-%token <text> id
-%token <value> int
+%token let fn line lparen rparen lcurly rcurly lbrack rbrack comma arrow eq lt gt rest dot plus star dash slash mod
+%token <text> name
+%token <value> value
 
-%type <value> TOP EXPR SIMP CALL MUL SUM COMP ITER BLOCK FUNC BIND
+%type CV TOP BLOCK FUNC EXPR
+%type <value> SIMP CALL MUL SUM COMP ITER BIND
+%type <value> SUM_LIST CALL_LIST MUL_LIST ADD_LIST BLOCK_LIST
 
-%start REPLI
+%start S
 
 %%
 
-REPLI
-  : REPLI TOP {}
-  | {}
+S : CV ;
+
+CV
+  : CV TOP
+  | 
 ;
 
 TOP
-  : FUNC {}
-  | BIND {}
+  : FUNC
+  | BIND
 ;
 
 EXPR
-  : SUM {}
-  | COMP {}
-  | ITER {}
-  | BLOCK {}
-  | FUNC {}
-  | BIND {}
+  : SUM
+  | COMP
+  | ITER
+  | BLOCK
+  | FUNC
+  | BIND
 ;
 
-COMP_OP : lt | gt | eq ;
-MUL_OP  : star | div | mod ;
-SUM_OP  : plus | dash ;
+COMP_OP : '<' | '>' | '=' ;
+MUL_OP  : '*' | '/' | '%' ;
+SUM_OP  : '+' | '-' ;
 
 SUM_LIST
-  : SUM_LIST comma SUM
+  : SUM_LIST[tail] comma SUM[head]
     {
-      Ints val = Ints_concat($1, $2);
-      Ints_free($1);
-      Ints_free($2);
-      return val;
+      $$ = Ints_concat($head, $tail);
+      Ints_free(&$head);
+      Ints_free(&$tail);
     }
-  | { return Ints_empty(); }
+  | { $$ = Ints_empty(); }
 ;
 
 SIMP
-  : id {}
-  | int
-  | lbrack rbrack { Ints_empty(); }
-  | lbrack SUM SUM_LIST rbrack {}
+  : name { /* TODO get binding from context */ }
+  | value
+  | lbrack rbrack { $$ = Ints_empty(); }
+  | lbrack SUM[head] SUM_LIST[tail] rbrack
+    {
+      $$ = Ints_concat($head, $tail);
+      Ints_free(&$head);
+      Ints_free(&$tail);
+    }
 ;
 
 CALL_LIST
-  : CALL_LIST dot id {}
+  : CALL_LIST dot name {}
   | {}
 ;
 
@@ -91,7 +116,7 @@ COMP
 ;
 
 ITER
-  : lbrack SUM arrow id rbrack EXPR {}
+  : lbrack SUM arrow name rbrack EXPR {}
 ;
 
 BLOCK_LIST
@@ -102,23 +127,29 @@ BLOCK
   : lcurly BLOCK_LIST rcurly {}
 ;
 
-id_LIST
-  : id_LIST comma id {}
+NAME_LIST
+  : NAME_LIST comma name {}
   | {}
 ;
 
 PAT
-  : id id_LIST {}
-  | id id_LIST rest id {}
-  | rest id {}
+  : name NAME_LIST {}
+  | name NAME_LIST rest name {}
+  | rest name {}
 ;
 
 FUNC
-  : fn id line PAT line BLOCK {}
-  | fn id BLOCK {}
+  : fn name line PAT line BLOCK {}
+  | fn name BLOCK {}
 ;
 
 BIND
-  : let id eq EXPR {}
-  | id eq EXPR {}
+  : let name eq EXPR {}
+  | name eq EXPR {}
 ;
+
+%%
+
+int main(void) {
+  return 0;
+}

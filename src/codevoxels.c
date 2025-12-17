@@ -2,18 +2,9 @@
 #define CODEVOXELS
 
 #include "fat_array.h"
-#include <stdio.h>
 
+DEF_ARRAY(int, Ints);
 IMPL_ARRAY(int, Ints);
-IMPL_ARRAY(char*, Strs);
-
-
-typedef struct {
-  char* name;
-  Ints value;
-} Binding;
-
-IMPL_ARRAY(Binding, Bindings);
 
 void print_int(int a) { printf("%d", a); }
 
@@ -36,6 +27,7 @@ int main(void) {
   Ints_print(d, print_int);
   Ints_print(e, print_int);
   Ints_print(f, print_int);
+
   
   return 0;
 }
