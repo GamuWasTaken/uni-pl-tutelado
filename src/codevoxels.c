@@ -1,33 +1,38 @@
 #ifndef CODEVOXELS
 #define CODEVOXELS
 
-#include "fat_array.h"
+#include "types.h"
 
-DEF_ARRAY(int, Ints);
-IMPL_ARRAY(int, Ints);
-
-void print_int(int a) { printf("%d", a); }
+void print_int(int i) {printf("%d", i);}
+void print_bind(Bind b) { printf("{ %s = ", b.name); Ints_print(b.value, print_int); printf(" }"); }
 
 int main(void) {
 
-  Ints a = Ints_empty();
-  Ints b = Ints_of_single(1);
-  Ints c = Ints_of_single(2);
-  Ints d = Ints_of_single(3);
-  Ints e = Ints_of_single(4);
-  Ints f = Ints_of_single(5);
+  int from[3] = {1,2,3};
 
-  Ints ab = Ints_concat(a,b);
-  Ints_free(&a);
-  Ints_free(&b);
+  Ints a = Ints_new(3, from);
+  Ints b = Ints_empty();
+  Ints c = Ints_of_single(8);
 
-  Ints_print(a, print_int);
-  Ints_print(b, print_int);
+  printf("\n");
   Ints_print(c, print_int);
-  Ints_print(d, print_int);
-  Ints_print(e, print_int);
-  Ints_print(f, print_int);
+  printf("\n");
+  Ints_print(*Ints_push(&c, 4), print_int);
+  printf("\n");
+  print_int(*Ints_pop(&c));
+  printf("\n");
 
+
+ //
+ // TODO polish pat (Strs + bool?)
+ // TODO Finish lang impl
+ // TODO test it
+ // TODO generate the ast with bison 
+ // TODO test it
+ // TODO compile to wasm
+ // TODO test it
+ // :)
+  
   
   return 0;
 }

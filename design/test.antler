@@ -64,10 +64,12 @@ fn iter3d {
     [dim -> x] [dim -> y] [dim -> z] {
         (x > y) (y > z) [0,0,0,0].@setBlock
         
-        (x < y) .@moveUp
-        (z < x) .@moveLeft
+        (x < y) [].@moveUp
+        (z < x) [].@moveLeft
     }
 }
+
+let main = 3.range
 
 
 
