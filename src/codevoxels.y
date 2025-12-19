@@ -1,7 +1,6 @@
 %code requires {
 
   #include "types.h"
-  void yyerror (Ast*, char const *);
   int yylex(void);
 }
 
@@ -114,11 +113,21 @@ SIMP
   | value   { $$ = Ast_lit(@$, $value); }
   | lbrack rbrack { $$ = Ast_lit(@$, Ints_empty()); }
   | lbrack VAL_LIST[tail] rbrack { $$ = Ast_val(@$, $tail); }
+  | lbrack error rbrack
+    {
+      $$ = Ast_lit(@error, Ints_empty());
+      yyerror(&$$, "Unexpected value in literal");
+    }
 ;
 
 CALL
   : SIMP[head] {}
   | CALL[head] dot name { $$ = Ast_call(@$, $head, $name); }
+  | error dot name
+    {
+      $$ = Ast_lit(@error, Ints_empty());
+      yyerror(&$$, "Unexpected value in function call");
+    }
 ;
 
 MUL

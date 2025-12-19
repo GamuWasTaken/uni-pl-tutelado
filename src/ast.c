@@ -1,5 +1,6 @@
 
 #include <assert.h>
+#include <stdio.h>
 
 #include "types.h"
 #include "api.h"
@@ -62,10 +63,11 @@ Ast Ast_block(Location loc, Childs childs) {
 
 void Ast_push(Ctxs *ctx) {
   // Copy last ctx and push it to ctxs
-  Ctx *last = Ctxs_last(ctx);
+  Ctx last = ctx->data[ctx->len-1];
 
-  Ctx copy = (Ctx){.fns = Defs_new(last->fns.len, last->fns.data),
-                   .vars = Binds_new(last->vars.len, last->vars.data)};
+  Ctx copy = (Ctx){.fns = Defs_new(last.fns.len, last.fns.data),
+                   .vars = Binds_new(last.vars.len, last.vars.data)};
+
   Ctxs_push(ctx, copy);
 }
 
@@ -111,7 +113,7 @@ void Ast_print(Ast *ast, int depth) {
 }
 
 Ints Ast_eval(Ctxs *ctx, Ast *ast) {
-  printf("%d\n", ast->loc.first_line);
+  // printf("%d\n", ast->loc.first_line);
   switch (ast->kind) {
   case Val: {
     if (ast->childs.len == 0) {
@@ -120,8 +122,7 @@ Ints Ast_eval(Ctxs *ctx, Ast *ast) {
 
     Ints val = Ints_empty();
     for (int i = 0; i < ast->childs.len; i++) {
-      Ast current = ast->childs.data[i];
-      val = Ints_concat(val, Ast_eval(ctx, &current));
+      val = Ints_concat(val, Ast_eval(ctx, &ast->childs.data[i]));
     }
     return val;
   }
@@ -151,9 +152,9 @@ Ints Ast_eval(Ctxs *ctx, Ast *ast) {
     Ast_push(ctx);
 
       // TODO convert this assert into a lang error msg
-      assert(args.len == fn->pat.names.len ||
-             (args.len > fn->pat.names.len && fn->pat.rest) ||
-             "Argument count is not valid for this call");
+      assert((args.len == fn->pat.names.len ||
+             (args.len > fn->pat.names.len && fn->pat.rest))
+             &&"Argument count is not valid for this call");
       // foreach arg bind pat[i] = arg[i]
       // last gets the rest
       for (int i = 0; i < fn->pat.names.len; i++) {
@@ -191,7 +192,7 @@ Ints Ast_eval(Ctxs *ctx, Ast *ast) {
 
     if (ast->expr.branch.eval(lhs, rhs)) {
       Ast_push(ctx);
-      Ast_eval(ctx, body);
+        Ast_eval(ctx, body);
       Ast_pop(ctx);
     }
 
@@ -202,7 +203,7 @@ Ints Ast_eval(Ctxs *ctx, Ast *ast) {
   case Loop: {
     assert(ast->childs.len == 2 || "Loop expects 2 childs");
 
-    char *name = ast->childs.data[1].expr.loop.name;
+    char *name = ast->expr.loop.name;
 
     Ints iter;
     Ints iter_value = Ints_empty();
@@ -215,11 +216,11 @@ Ints Ast_eval(Ctxs *ctx, Ast *ast) {
         return iter_value;
 
       Ints current = Ints_of_single(iter.data[i]);
-
+      
       Ast_push(ctx);
 
-      Binds_set(&Ctxs_last(ctx)->vars, (Bind){.name = name, .value = current});
-      iter_value = Ast_eval(ctx, &ast->childs.data[2]);
+        Binds_set(&Ctxs_last(ctx)->vars, (Bind){.name = name, .value = current});
+        iter_value = Ast_eval(ctx, &ast->childs.data[1]);
 
       Ast_pop(ctx);
 

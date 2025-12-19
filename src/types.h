@@ -192,7 +192,7 @@ void print_ctx(Ctx);
 
 void Ast_print(Ast *ast, int depth);
 
-void yyerror (Ast*, char const *);
+void yyerror (Ast* ast, char const * msg);
 int yylex(void);
 
 #endif //TYPES_HEADER

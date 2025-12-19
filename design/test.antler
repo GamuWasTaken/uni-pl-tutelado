@@ -69,7 +69,7 @@ fn iter3d {
     }
 }
 
-let main = 3.range3
+let main = iter3d
 
 
 

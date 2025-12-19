@@ -25,16 +25,20 @@ compile: (gen)
         -sEXPORTED_FUNCTIONS=___parse          \
         {{syn}}.c {{lex}}.c {{types}}.c {{ast}}.c {{api}}.c
 
+compile-local: (gen)
+    gcc -o {{src}} {{syn}}.c {{lex}}.c {{types}}.c {{ast}}.c {{src}}.c -ly -lfl -g
+
 run: (compile)
-    simple-http-server .
-    firefox localhost:8000/index.html
+    rm ./codevoxels-frontend/public/interpreter/*
+    cp {{src}}.js ./codevoxels-frontend/public/interpreter/
+    cp {{src}}.wasm ./codevoxels-frontend/public/interpreter/
+    pnpm -C ./codevoxels-frontend run dev
 
-check: (gen)
-    gcc -static -o {{src}} {{syn}}.c {{lex}}.c {{types}}.c {{ast}}.c {{api}}.c -ly -lfl
+run-local: (compile-local)
+    ./{{src}} < design/test
 
-debug: (check)
-    gcc -o {{src}} {{syn}}.c {{lex}}.c {{types}}.c {{ast}}.c -ly -lfl -g
-    gdbgui {{src}} -n
+debug: (compile-local)
+    gdbgui {{src}}
 
 clean:
     rm {{lex}}.c {{lex}}.h {{syn}}.c {{syn}}.h \

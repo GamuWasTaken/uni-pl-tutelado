@@ -5,34 +5,41 @@
 #include "lex.h"
 #include "syn.h"
 
+#include <emscripten.h>
+
 
 // extern void forward__();
 Ints __forward() {
    // forward__();
+   EM_ASM(forward());
    return Ints_empty();
- }
+}
 
 // extern void turnRight__();
 Ints __turnRight() {
   // turnRight__();
+   EM_ASM(turnRight());
   return Ints_empty();
 }
 
 // extern void turnLeft__();
 Ints __turnLeft() {
   // turnLeft__();
+   EM_ASM(turnLeft());
   return Ints_empty();
 }
 
 // extern void up__();
 Ints __up() {
   // up__();
+   EM_ASM(up());
   return Ints_empty();
 }
 
 // extern void down__();
 Ints __down() {
   // down__();
+   EM_ASM(down());
   return Ints_empty();
 }
 
@@ -40,6 +47,9 @@ Ints __down() {
 Ints __setBlock(Ints col) {
   assert(col.len == 4 || "@setBlock expects 4 arguments");
   // setBlock__(col.data[0], col.data[1], col.data[2], col.data[3]);
+   EM_ASM( {setBlock($1,$2,$3,$4)},
+    col.data[0], col.data[1], col.data[2], col.data[3]
+ );
   return Ints_empty();
 }
 
@@ -48,7 +58,7 @@ Ints __setBlock(Ints col) {
 
 Ints dispatchBuiltin(char* name, Ints data) {
 
-  printf("Builtin");
+  printf("Builtin %s\n", name);
   
   if(strcmp(name, "@forward")   == 0) return __forward();
   if(strcmp(name, "@turnRight") == 0) return __turnRight();
@@ -63,8 +73,8 @@ Ints dispatchBuiltin(char* name, Ints data) {
 
 void __parse(char* code) {
 
-  printf("Reading this: ");
-  printf("%s\n", code);
+  // printf("Reading this: \n");
+  // printf(">%s<\n", code);
 
   Ast base = Ast_block((Location) {
     .first_column = 1,
@@ -77,7 +87,7 @@ void __parse(char* code) {
   int status = yyparse(&base);
   
   Ctxs ctx = Ctxs_default();
-  Ast_print(&base, 0);
+  // Ast_print(&base, 0);
   Ast_eval(&ctx, &base);
 
   yy_delete_buffer(buff);

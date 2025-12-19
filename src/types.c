@@ -120,12 +120,13 @@ Ctxs Ctxs_default() {
 }
 
 void print_int(int i) {printf("%d", i);}
-void print_bind(Bind b) { printf("{ %s = ", b.name); Ints_print(b.value, print_int); printf(" }"); }
+void print_bind(Bind b) {printf("{ %s = ", b.name); Ints_print(b.value, print_int); printf(" }");}
 void print_str(char* c) {printf("%s", c);}
 void print_def(Def);
-void print_ctx(Ctx);
+void print_ctx(Ctx c) {Binds_print(c.vars, print_bind);}
 
 void yyerror (Ast* ast, char const * msg) {
-  printf("%s", msg);
+  printf("%s\n", msg);
   Ast_print(ast, 0);
+  printf("\n");
 }

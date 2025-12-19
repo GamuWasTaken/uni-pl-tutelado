@@ -39,7 +39,6 @@ _name* _name##_push(_name *arr, _type elem)
 _DEF_ARRAY_PUSH(_type, _name) {                             \
   _type *new_data = malloc(sizeof(_type) * (arr->len + 1)); \
   memcpy(new_data, arr->data, arr->len * sizeof(_type));    \
-                                                            \
   new_data[arr->len] = elem;                                \
   free(arr->data);                                          \
   arr->data = new_data;                                     \
