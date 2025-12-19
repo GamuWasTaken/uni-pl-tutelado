@@ -2,6 +2,10 @@
 #include "api.h"
 #include "string.h"
 #include "types.h"
+#include "lex.h"
+#include "syn.h"
+
+
 // extern void forward__();
 Ints __forward() {
    // forward__();
@@ -55,4 +59,23 @@ Ints dispatchBuiltin(char* name, Ints data) {
   // if(strcmp(name, "@readBlock") == 0) return __readBlock();
 
   return Ints_empty();
+}
+
+void __parse(char* code) {
+
+  Ast base = Ast_block((Location) {
+    .first_column = 1,
+    .first_line = 1,
+    .last_column = 1,
+    .last_line = 1
+  }, Childs_empty());
+
+  struct yy_buffer_state* buff = yy_scan_string(code);
+  int status = yyparse(&base);
+  
+  Ctxs ctx = Ctxs_default();
+  Ast_eval(&ctx, &base);
+
+  yy_delete_buffer(buff);
+
 }

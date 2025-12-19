@@ -15,9 +15,9 @@ l = _line;               \
 yylloc.last_line = l;    \
 yylloc.last_column = c;  \
 
-
 %}
 
+%option noyywrap
 %option yylineno
 
 %%

@@ -124,3 +124,7 @@ void print_bind(Bind b) { printf("{ %s = ", b.name); Ints_print(b.value, print_i
 void print_str(char* c) {printf("%s", c);}
 void print_def(Def);
 void print_ctx(Ctx);
+
+void yyerror (Ast* ast, char const * msg) {
+  printf("ploto");
+}

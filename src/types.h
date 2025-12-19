@@ -58,6 +58,7 @@ DEF_ARRAY_SET(_name, _in, _out) {           \
   return arr;                               \
 }                                           \
 
+
 /* Ints */
 DEF_ARRAY(int, Ints);
 void Ints_free(Ints *arr);
@@ -190,4 +191,8 @@ void print_def(Def);
 void print_ctx(Ctx);
 
 void Ast_print(Ast *ast, int depth);
+
+void yyerror (Ast*, char const *);
+int yylex(void);
+
 #endif //TYPES_HEADER

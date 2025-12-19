@@ -7,7 +7,6 @@
 
 %define parse.trace
 
-
 %union {
   char* text;
   Ints ints;
@@ -22,7 +21,6 @@
 
 %parse-param { Ast* tree }
 %define api.location.type {Location}
-
 
 %token let
 %token fn
