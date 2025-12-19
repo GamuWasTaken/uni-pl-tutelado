@@ -11,3 +11,4 @@ Ints __down();
 Ints __setBlock(Ints);
 // Ints __readBlock();
 
+void __parse(char*);
