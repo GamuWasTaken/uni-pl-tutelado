@@ -63,6 +63,9 @@ Ints dispatchBuiltin(char* name, Ints data) {
 
 void __parse(char* code) {
 
+  printf("Reading this: ");
+  printf("%s\n", code);
+
   Ast base = Ast_block((Location) {
     .first_column = 1,
     .first_line = 1,
@@ -74,6 +77,7 @@ void __parse(char* code) {
   int status = yyparse(&base);
   
   Ctxs ctx = Ctxs_default();
+  Ast_print(&base, 0);
   Ast_eval(&ctx, &base);
 
   yy_delete_buffer(buff);
