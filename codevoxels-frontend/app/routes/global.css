@@ -1,0 +1,16 @@
+.title-card-container {
+    background-color: skyblue;
+    position: relative;
+    color:white;
+    font-weight: bold;
+    border-radius: 15px;
+    box-shadow: 5px 5px 10px 3px #0005;
+    height: 100%;
+}
+
+.title-bar{
+    display:flex;
+    padding: 10px 10px;
+    background-color: rgb(30, 191, 255);
+    border-radius: 15px 15px 0px 0px;
+}
