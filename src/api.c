@@ -58,7 +58,9 @@ Ints __setBlock(Ints col) {
 
 Ints dispatchBuiltin(char* name, Ints data) {
 
-  printf("Builtin %s\n", name);
+  printf("Builtin %s ( ", name);
+  Ints_print(data, print_int);
+  printf(" )\n");
   
   if(strcmp(name, "@forward")   == 0) return __forward();
   if(strcmp(name, "@turnRight") == 0) return __turnRight();
