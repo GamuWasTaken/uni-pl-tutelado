@@ -119,16 +119,21 @@ export default function Renderer() {
         const delta = directions[cursorDirection];
         const newX = Math.max(0, Math.min(dimensions.x - 1, prev.x + delta.x));
         const newZ = Math.max(0, Math.min(dimensions.z - 1, prev.z + delta.z));
+
+        console.log("Moving forward in direction ", directions[cursorDirection]);
         return { ...prev, x: newX, z: newZ };
       });
     };
 
     const turnRight = () => {
       setCursorDirection(prev => (prev - 1 + 4 ) % 4);
+
+      console.log("Turned right => ");
     };
 
     const turnLeft = () => {
       setCursorDirection(prev => (prev + 1 ) % 4);
+      console.log("<= Turned left ");
     };
 
     const up = () => {
@@ -136,6 +141,8 @@ export default function Renderer() {
         ...prev,
         y: Math.min(dimensions.y - 1, prev.y + 1)
       }));
+
+      console.log("^ Moved up ^ ");
     };
 
     const down = () => {
@@ -143,6 +150,8 @@ export default function Renderer() {
         ...prev,
         y: Math.max(0, prev.y - 1)
       }));
+
+      console.log("v Moved down v ");
     };
 
     const setBlock = (r: number = 255, g: number = 255, b: number = 255, a: number = 1) => {
