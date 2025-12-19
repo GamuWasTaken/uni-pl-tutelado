@@ -42,6 +42,24 @@ export default function Renderer() {
     const [cursorPos, setCursorPos] = useState({ x: dimensions.x-1, y: dimensions.y-1, z: dimensions.z-1 });
     const [cursorDirection, setCursorDirection] = useState(0);
 
+    // Refs for synchronous access to current state
+    const voxelWorldRef = useRef<number[][][][]>(voxelWorldState);
+    const cursorPosRef = useRef(cursorPos);
+    const cursorDirectionRef = useRef(cursorDirection);
+
+    // Keep refs in sync with state
+    useEffect(() => {
+      voxelWorldRef.current = voxelWorldState;
+    }, [voxelWorldState]);
+
+    useEffect(() => {
+      cursorPosRef.current = cursorPos;
+    }, [cursorPos]);
+
+    useEffect(() => {
+      cursorDirectionRef.current = cursorDirection;
+    }, [cursorDirection]);
+
     const spacingOffset = isBlockSpacingActive ? 0.1 : 0.0;
     const spacingFactor = (1 + spacingOffset);
 
@@ -107,67 +125,77 @@ export default function Renderer() {
 
     }, []);
 
-    // Control functions for the cursor
+    // Control functions for the cursor - synchronous execution using refs
     const forward = () => {
-      setCursorPos(prev => {
-        const directions = [
-          { x: 1, z: 0 },  // 0: +x
-          { x: 0, z: -1 },  // 3: -z
-          { x: -1, z: 0 }, // 2: -x
-          { x: 0, z: 1 }  // 1: +z
-        ];
-        const delta = directions[cursorDirection];
-        const newX = Math.max(0, Math.min(dimensions.x - 1, prev.x + delta.x));
-        const newZ = Math.max(0, Math.min(dimensions.z - 1, prev.z + delta.z));
+      const directions = [
+        { x: 1, z: 0 },  // 0: +x
+        { x: 0, z: -1 },  // 3: -z
+        { x: -1, z: 0 }, // 2: -x
+        { x: 0, z: 1 }  // 1: +z
+      ];
+      const delta = directions[cursorDirectionRef.current];
+      const newX = Math.max(0, Math.min(dimensions.x - 1, cursorPosRef.current.x + delta.x));
+      const newZ = Math.max(0, Math.min(dimensions.z - 1, cursorPosRef.current.z + delta.z));
 
-        console.log("Moving forward in direction ", directions[cursorDirection]);
-        return { ...prev, x: newX, z: newZ };
-      });
+      const newPos = { ...cursorPosRef.current, x: newX, z: newZ };
+      cursorPosRef.current = newPos;
+      setCursorPos(newPos);
+
+      console.log("Moving forward in direction ", directions[cursorDirectionRef.current]);
     };
 
     const turnRight = () => {
-      setCursorDirection(prev => (prev - 1 + 4 ) % 4);
+      const newDirection = (cursorDirectionRef.current - 1 + 4) % 4;
+      cursorDirectionRef.current = newDirection;
+      setCursorDirection(newDirection);
 
       console.log("Turned right => ");
     };
 
     const turnLeft = () => {
-      setCursorDirection(prev => (prev + 1 ) % 4);
+      const newDirection = (cursorDirectionRef.current + 1) % 4;
+      cursorDirectionRef.current = newDirection;
+      setCursorDirection(newDirection);
+
       console.log("<= Turned left ");
     };
 
     const up = () => {
-      setCursorPos(prev => ({
-        ...prev,
-        y: Math.min(dimensions.y - 1, prev.y + 1)
-      }));
+      const newPos = {
+        ...cursorPosRef.current,
+        y: Math.min(dimensions.y - 1, cursorPosRef.current.y + 1)
+      };
+      cursorPosRef.current = newPos;
+      setCursorPos(newPos);
 
       console.log("^ Moved up ^ ");
     };
 
     const down = () => {
-      setCursorPos(prev => ({
-        ...prev,
-        y: Math.max(0, prev.y - 1)
-      }));
+      const newPos = {
+        ...cursorPosRef.current,
+        y: Math.max(0, cursorPosRef.current.y - 1)
+      };
+      cursorPosRef.current = newPos;
+      setCursorPos(newPos);
 
       console.log("v Moved down v ");
     };
 
     const setBlock = (r: number = 255, g: number = 255, b: number = 255, a: number = 1) => {
-      setVoxelWorldState(prev => {
-        const newWorld = prev.map(xArr =>
-          xArr.map(yArr =>
-            yArr.map(rgba => [...rgba])
-          )
-        );
-        newWorld[cursorPos.x][cursorPos.y][cursorPos.z] = [r, g, b, a];
-        return newWorld;
-      });
+      const newWorld = voxelWorldRef.current.map(xArr =>
+        xArr.map(yArr =>
+          yArr.map(rgba => [...rgba])
+        )
+      );
+      newWorld[cursorPosRef.current.x][cursorPosRef.current.y][cursorPosRef.current.z] = [r, g, b, a];
+      voxelWorldRef.current = newWorld;
+      setVoxelWorldState(newWorld);
+
       console.log("Putting block");
     };
 
-    // Expose control functions globally
+    // Expose control functions globally - only set once since they now use refs
     useEffect(() => {
       (window as any).forward = forward;
       (window as any).turnRight = turnRight;
@@ -184,7 +212,7 @@ export default function Renderer() {
         delete (window as any).down;
         delete (window as any).setBlock;
       };
-    }, [forward, turnRight, turnLeft, up, down, setBlock]);
+    }, []);
 
     const mountRef = useRef<HTMLDivElement>(null);
   return (<>
