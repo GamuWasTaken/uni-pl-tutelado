@@ -126,5 +126,6 @@ void print_def(Def);
 void print_ctx(Ctx);
 
 void yyerror (Ast* ast, char const * msg) {
-  printf("ploto");
+  printf("%s", msg);
+  Ast_print(ast, 0);
 }
