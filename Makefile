@@ -14,7 +14,7 @@ api   := $(root)api
 .PHONY: init gen compile compile-local run run-local debug clean
 
 init:
-	nix-shell -p simple-http-server llvmPackages_20.clang-tools rocmPackages.llvm.clang-unwrapped emscripten flex bison wabt
+	nix-shell -p simple-http-server llvmPackages_20.clang-tools rocmPackages.llvm.clang-unwrapped emscripten flex bison wabt nodejs_20 pnpm gdbgui
 
 gen:
 	flex --header-file=$(lex).h -o $(lex).c $(src).l

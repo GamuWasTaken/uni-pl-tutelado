@@ -90,3 +90,5 @@ Tambien soporta errores a la hora de encadenar elementos, por ejemplo, si
 multiplicas varias cosas pero una de ellas es un error sintactica simplemente
 se ignora
 
+# Online
+Para ejecutar la práctica online ve a: 
