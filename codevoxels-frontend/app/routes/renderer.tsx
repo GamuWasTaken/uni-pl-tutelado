@@ -1,10 +1,15 @@
 import { Canvas } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { OrbitControls, GizmoHelper, GizmoViewport } from '@react-three/drei';
+import { OrbitControls, GizmoHelper, GizmoViewport, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 import './renderer.css';
 import './global.css';
+
+function VoxelBot() {
+  const { scene } = useGLTF('/voxelbot.glb');
+  return <primitive object={scene} position={[0.0,-0.5,0.0]} scale={0.6} />;
+}
 
 export default function Renderer() {
     const dimensions = {
@@ -35,7 +40,7 @@ export default function Renderer() {
 
     // Cursor state: position and direction (0=+x, 1=+z, 2=-x, 3=-z)
     const [cursorPos, setCursorPos] = useState({ x: dimensions.x-1, y: dimensions.y-1, z: dimensions.z-1 });
-    const [cursorDirection, setCursorDirection] = useState(3);
+    const [cursorDirection, setCursorDirection] = useState(0);
 
     const spacingOffset = isBlockSpacingActive ? 0.1 : 0.0;
     const spacingFactor = (1 + spacingOffset);
@@ -107,9 +112,9 @@ export default function Renderer() {
       setCursorPos(prev => {
         const directions = [
           { x: 1, z: 0 },  // 0: +x
-          { x: 0, z: 1 },  // 1: +z
+          { x: 0, z: -1 },  // 3: -z
           { x: -1, z: 0 }, // 2: -x
-          { x: 0, z: -1 }  // 3: -z
+          { x: 0, z: 1 }  // 1: +z
         ];
         const delta = directions[cursorDirection];
         const newX = Math.max(0, Math.min(dimensions.x - 1, prev.x + delta.x));
@@ -119,11 +124,11 @@ export default function Renderer() {
     };
 
     const turnRight = () => {
-      setCursorDirection(prev => (prev + 1) % 4);
+      setCursorDirection(prev => (prev - 1 + 4 ) % 4);
     };
 
     const turnLeft = () => {
-      setCursorDirection(prev => (prev - 1 + 4) % 4);
+      setCursorDirection(prev => (prev + 1 ) % 4);
     };
 
     const up = () => {
@@ -195,9 +200,9 @@ export default function Renderer() {
         <edgesGeometry args={[
           new THREE.BoxGeometry(
             dimensions.x * spacingFactor,
-            dimensions.y * spacingFactor,
+            dimensions.y * spacingFactor, 
             dimensions.z * spacingFactor
-          )
+          ) 
         ]} />
         <lineBasicMaterial color="white" />
       </lineSegments>
@@ -211,8 +216,7 @@ export default function Renderer() {
         cursorPos.y * spacingFactor,
         cursorPos.z * spacingFactor
       ]} rotation={[0, (cursorDirection * Math.PI) / 2, 0]}>
-        <boxGeometry args={[1.0, 1.0, 1.0]} />
-        <meshBasicMaterial color="red" wireframe={true} />
+        <VoxelBot />
       </mesh>
 
       <ambientLight intensity={1.0} />
