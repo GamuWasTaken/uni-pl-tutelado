@@ -8,6 +8,7 @@ syn := root+"syn"
 
 types := root+"types"
 ast   := root+"ast"
+api   := root+"api"
 
 init:
     nix-shell -p simple-http-server llvmPackages_20.clang-tools rocmPackages.llvm.clang-unwrapped emscripten flex bison wabt
@@ -17,23 +18,22 @@ gen:
     bison -o {{syn}}.c -d {{src}}.y 
 
 compile: (gen)
-    emcc -o {{src}}.mjs                  \
+    emcc -o {{src}}.html                 \
         -sFORCE_FILESYSTEM               \
         -sNO_EXIT_RUNTIME=1              \
         -sEXPORTED_RUNTIME_METHODS=cwrap \
-        {{syn}}.c {{lex}}.c 
+        {{syn}}.c {{lex}}.c {{types}}.c {{ast}}.c {{api}}.c
 
 run: (compile)
     simple-http-server .
     firefox localhost:8000/index.html
 
-check_appart:
-    gcc -o {{src}} {{src}}.c {{types}}.c {{ast}}.c
-    ./{{src}}
-
 check: (gen)
-    gcc -o {{src}} {{syn}}.c {{lex}}.c {{types}}.c {{ast}}.c -ly -lfl
-    ./{{src}}
+    gcc -static -o {{src}} {{syn}}.c {{lex}}.c {{types}}.c {{ast}}.c {{api}}.c -ly -lfl
+
+debug: (check)
+    gcc -o {{src}} {{syn}}.c {{lex}}.c {{types}}.c {{ast}}.c -ly -lfl -g
+    gdbgui {{src}} -n
 
 
 clean:

@@ -29,7 +29,6 @@ Ints Ints_op(Ints a, Ints b, int (*op)(int, int)){
       res.data[i] = max.data[i]; 
   }
   return res;
-  
 }
 
 IMPL_INTS_OP(add, a+b);
@@ -66,7 +65,7 @@ bool Ints_comp(Ints a, Ints b, bool (*op)(int, int)){
 
 IMPL_INTS_COMP(gt, a>b);
 IMPL_INTS_COMP(lt, a<b);
-IMPL_INTS_COMP(eq, a=b);
+IMPL_INTS_COMP(eq, (a=b));
 
 /* Strs */
 IMPL_ARRAY(char*, Strs);
@@ -79,6 +78,14 @@ void Strs_free(Strs *arr) {
   // }
   Strs_simple_free(arr);
 }
+
+char* Kind_name(Kind val) {
+  static char* names[] = {
+    "Val", "Var", "Op", "Call", "Branch", "Loop", "Binding", "Fn", "Block"
+  };
+
+  return names[val];
+};
 
 /* Binds */
 IMPL_ARRAY(Bind, Binds);
@@ -107,7 +114,13 @@ Ctx* Ctxs_last(Ctxs* arr){
 
 Ctxs Ctxs_default() {
   return Ctxs_of_single((Ctx) {
-                          .fns = Defs_empty(),
-                          .vars = Binds_empty()
-                        });
+    .fns = Defs_empty(),
+    .vars = Binds_empty()
+  });
 }
+
+void print_int(int i) {printf("%d", i);}
+void print_bind(Bind b) { printf("{ %s = ", b.name); Ints_print(b.value, print_int); printf(" }"); }
+void print_str(char* c) {printf("%s", c);}
+void print_def(Def);
+void print_ctx(Ctx);

@@ -30,7 +30,7 @@ DEF_ARRAY_GET(_name, _in, _out) {                            \
       return &arr->data[i];                                  \
   }                                                          \
   assert(false || "Assoc array doesnt have requested name"); \
-  abort();                                                   \
+  return NULL;                                               \
 }                                                            \
 
 #define DEF_ARRAY_HAS(_name, _in, _out) \
@@ -92,9 +92,16 @@ DEF_ARRAY_SET(Binds, Bind, Ints);
 typedef struct Ast Ast;
 DEF_ARRAY(Ast, Childs);
 
+  /* Pat */
+  typedef struct {
+    Strs names;
+    bool rest;
+  } Pat;
+
   /* Defs */
   typedef struct {
     char* name;
+    Pat pat;
     Ast* value;
   } Def;
   DEF_ARRAY(Def, Defs);
@@ -103,13 +110,8 @@ DEF_ARRAY(Ast, Childs);
   DEF_ARRAY_HAS(Defs, Def, Ast*);
   DEF_ARRAY_SET(Defs, Def, Ast*);
 
-  /* Pat */
-  typedef struct {
-    Strs names;
-    bool rest;
-  } Pat;
-
 typedef enum { Val, Var, Op, Call, Branch, Loop, Binding, Fn, Block } Kind;
+char* Kind_name(Kind val);
 typedef union {
   Ints val;
   char* var;
@@ -144,22 +146,30 @@ typedef union {
 
 } Expr;
 
+typedef struct {
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+} Location;
+
 struct Ast {
   Kind kind;
   Expr expr;
   Childs childs;
+  Location loc;
 };
 
-Ast Ast_lit(Ints val);
-Ast Ast_val(Childs val);
-Ast Ast_var(char* var);
-Ast Ast_op(Ast lhs, Ints (*eval)(Ints, Ints), Ast rhs);
-Ast Ast_call(Ast args, char* name);
-Ast Ast_branch(Ast lhs, bool (*eval)(Ints, Ints), Ast rhs, Ast body);
-Ast Ast_loop(Ast iter, char* name, Ast body);
-Ast Ast_bind(char* name, Ast val);
-Ast Ast_fn(char* name, Pat pat, Ast body);
-Ast Ast_block(Childs childs);
+Ast Ast_lit(Location loc, Ints val);
+Ast Ast_val(Location loc, Childs val);
+Ast Ast_var(Location loc, char* var);
+Ast Ast_op(Location loc, Ast lhs, Ints (*eval)(Ints, Ints), Ast rhs);
+Ast Ast_call(Location loc, Ast args, char* name);
+Ast Ast_branch(Location loc, Ast lhs, bool (*eval)(Ints, Ints), Ast rhs, Ast body);
+Ast Ast_loop(Location loc, Ast iter, char* name, Ast body);
+Ast Ast_bind(Location loc, char* name, Ast val);
+Ast Ast_fn(Location loc, char* name, Pat pat, Ast body);
+Ast Ast_block(Location loc, Childs childs);
 
   /* Ctx */
   typedef struct {
@@ -170,5 +180,14 @@ Ast Ast_block(Childs childs);
   Ctx* Ctxs_last(Ctxs* arr);
   Ctxs Ctxs_default();
 
-Ints Ast_eval(Ctxs ctx, Ast *ast);
+Ints Ast_eval(Ctxs *ctx, Ast *ast);
+
+
+void print_int(int);
+void print_str(char*);
+void print_bind(Bind);
+void print_def(Def);
+void print_ctx(Ctx);
+
+void Ast_print(Ast *ast, int depth);
 #endif //TYPES_HEADER

@@ -1,8 +1,8 @@
 %code requires {
 
   #include "types.h"
+  void yyerror (Ast*, char const *);
   int yylex(void);
-  void yyerror (char const *);
 }
 
 %define parse.trace
@@ -19,6 +19,10 @@
   Childs childs;
   Pat pat;
 }
+
+%parse-param { Ast* tree }
+%define api.location.type {Location}
+
 
 %token let
 %token fn
@@ -50,32 +54,27 @@
 %type <op> MUL_OP
 
 %token <text> name
-%printer { fprintf(yyo, "name(%s)", $$); } name
+%printer { fprintf(yyo, "##(%s)", $$); } name
 %token <ints> value
 
-%type <ast> CV TOP BLOCK FUNC EXPR
+%type <ast> TOP BLOCK FUNC EXPR
 %type <ast> SIMP CALL MUL SUM COMP ITER BIND
-%type <childs> BLOCK_LIST VAL_LIST
+%type <childs> CV BLOCK_LIST VAL_LIST
 %type <strs> NAME_LIST
-%type <pat> PAT 
+%type <pat> PAT
 
 %destructor { Ints_free(&$$); } <ints>
 %destructor { Strs_free(&$$); } <strs>
 
 %start S
 
-%{
-  
-  void print_int(int a) {printf("%d", a);}
-%}
-
 %%
 
-S : CV { Ints_print(Ast_eval(Ctxs_default(), &$1), print_int ); };
+S : CV[program] { tree->childs = $program; tree->loc = @$; };
 
 CV
-  : CV TOP[last] { $$ = $last; }
-  | { $$ = Ast_lit(Ints_empty()); }
+  : CV[tail] TOP[head] { Childs_push(&$tail, $head); $$ = $tail; }
+  | { $$ = Childs_empty(); }
 ;
 
 TOP
@@ -108,41 +107,40 @@ SUM_OP
 ;
 
 VAL_LIST
-  : VAL_LIST[tail] comma SUM[head] { Childs_push(&$tail, $head); $$ = $tail; }
-  | { $$ = Childs_empty(); }
+  : SUM[head] { $$ = Childs_of_single($head); }
+  | VAL_LIST[tail] comma SUM[head] { Childs_push(&$tail, $head); $$ = $tail; }
 ;
 
 SIMP
-  : name    { $$ = Ast_var($name);  }
-  | value   { $$ = Ast_lit($value); }
-  | lbrack rbrack { $$ = Ast_lit(Ints_empty()); }
-  | lbrack SUM[head] VAL_LIST[tail] rbrack
-    { Childs_push(&$tail, $head); $$ = Ast_val($tail); }
+  : name    { $$ = Ast_var(@$, $name); }
+  | value   { $$ = Ast_lit(@$, $value); }
+  | lbrack rbrack { $$ = Ast_lit(@$, Ints_empty()); }
+  | lbrack VAL_LIST[tail] rbrack { $$ = Ast_val(@$, $tail); }
 ;
 
 CALL
   : SIMP[head] {}
-  | CALL[head] dot name { $$ = Ast_call($head, $name); }
+  | CALL[head] dot name { $$ = Ast_call(@$, $head, $name); }
 ;
 
 MUL
   : CALL[head] {}
-  | MUL[head] MUL_OP[op] CALL[tail] { $$ = Ast_op($head, $op, $tail); }
+  | MUL[head] MUL_OP[op] CALL[tail] { $$ = Ast_op(@$, $head, $op, $tail); }
 ;
 
 SUM
   : MUL[head] {}
-  | SUM[head] SUM_OP[op] MUL[tail] { $$ = Ast_op($head, $op, $tail); }
+  | SUM[head] SUM_OP[op] MUL[tail] { $$ = Ast_op(@$, $head, $op, $tail); }
 ;
 
 COMP
   : lparen SUM[lhs] COMP_OP[op] SUM[rhs] rparen EXPR[body]
-    { $$ = Ast_branch($lhs, $op, $rhs, $body); }
+    { $$ = Ast_branch(@$, $lhs, $op, $rhs, $body); }
 ;
 
 ITER
   : lbrack SUM[iter] arrow name rbrack EXPR[body]
-    { $$ = Ast_loop($iter, $name, $body); }
+    { $$ = Ast_loop(@$, $iter, $name, $body); }
 ;
 
 BLOCK_LIST
@@ -150,7 +148,7 @@ BLOCK_LIST
   | { $$ = Childs_empty(); }
 ;
 BLOCK
-  : lcurly BLOCK_LIST[body] rcurly { $$ = Ast_block($body); }
+  : lcurly BLOCK_LIST[body] rcurly { $$ = Ast_block(@$, $body); }
 ;
 
 NAME_LIST
@@ -176,23 +174,17 @@ PAT
 ;
 
 FUNC
-  : fn name line PAT[pat] line BLOCK[body] { $$ = Ast_fn($name, $pat, $body); }
+  : fn name line PAT[pat] line BLOCK[body] { $$ = Ast_fn(@$, $name, $pat, $body); }
   | fn name BLOCK[body]
     {
       Pat pat = (Pat) { .names = Strs_empty(), .rest = false };
-      $$ = Ast_fn($name, pat, $body);
+      $$ = Ast_fn(@$, $name, pat, $body);
     }
 ;
 
 BIND
-  : let name eq SUM[body] { $$ = Ast_bind($name, $body); }
-  | name eq SUM[body] { $$ = Ast_bind($name, $body); }
+  : let name eq SUM[body] { $$ = Ast_bind(@$, $name, $body); }
+  | name eq SUM[body] { $$ = Ast_bind(@$, $name, $body); }
 ;
 
 %%
-
-int main(void) {
-  //yydebug = 1;
-  yyparse();
-  return 0;
-}

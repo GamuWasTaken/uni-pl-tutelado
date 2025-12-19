@@ -4,45 +4,58 @@
 #include <stdlib.h>
 #include "syn.h"
 
+int c = 0;
+int l = 1;
+
+#define LOC(_col, _line) \
+yylloc.first_line = l;   \
+yylloc.first_column = c; \
+c = _col;                \
+l = _line;               \
+yylloc.last_line = l;    \
+yylloc.last_column = c;  \
+
+
 %}
 
 %option yylineno
 
 %%
 
-"="   { return eq     ;}
-"<"   { return lt     ;}
-">"   { return gt     ;}
-"let" { return let    ;}
-"fn"  { return fn     ;}
+"="   { LOC(c+1,l); return eq     ;}
+"<"   { LOC(c+1,l); return lt     ;}
+">"   { LOC(c+1,l); return gt     ;}
+"let" { LOC(c+1,l); return let    ;}
+"fn"  { LOC(c+1,l); return fn     ;}
 
-"|"   { return line   ;}
-"("   { return lparen ;}
-")"   { return rparen ;}
-"{"   { return lcurly ;}
-"}"   { return rcurly ;}
-"["   { return lbrack ;}
-"]"   { return rbrack ;}
-","   { return comma  ;}
+"|"   { LOC(c+1,l); return line   ;}
+"("   { LOC(c+1,l); return lparen ;}
+")"   { LOC(c+1,l); return rparen ;}
+"{"   { LOC(c+1,l); return lcurly ;}
+"}"   { LOC(c+1,l); return rcurly ;}
+"["   { LOC(c+1,l); return lbrack ;}
+"]"   { LOC(c+1,l); return rbrack ;}
+","   { LOC(c+1,l); return comma  ;}
 
-"->"  { return arrow  ;}
-".."  { return rest   ;}
+"->"  { LOC(c+1,l); return arrow  ;}
+".."  { LOC(c+1,l); return rest   ;}
 
 
-"."   { return dot    ;}
+"."   { LOC(c+1,l); return dot    ;}
 
-"+"   { return plus   ;}
-"*"   { return star   ;}
-"-"   { return dash   ;}
-"/"   { return slash  ;}
-"%"   { return mod    ;}
+"+"   { LOC(c+1,l); return plus   ;}
+"*"   { LOC(c+1,l); return star   ;}
+"-"   { LOC(c+1,l); return dash   ;}
+"/"   { LOC(c+1,l); return slash  ;}
+"%"   { LOC(c+1,l); return mod    ;}
 
-[@a-zA-Z][a-zA-Z_0-9]* { yylval.text = strdup(yytext); return name; }
-[0-9]+ { yylval.ints = Ints_of_single(atoi(yytext)); return value; }
+[@a-zA-Z][a-zA-Z_0-9]* { LOC(c+strlen(yytext),l); yylval.text = strdup(yytext); return name; }
+[0-9]+ { LOC(c+strlen(yytext),l); yylval.ints = Ints_of_single(atoi(yytext)); return value; }
 
-"//".*"\n"   {;}
-[ \n\t\r\f]+ {;}
+"//".*"\n"   {LOC(1, l+1);}
+"\r"?"\n"    {LOC(1, l+1);}
+[ \t]+ {LOC(c+1,l);}
 
-. {;}
+. {LOC(c+1,l);}
 
 %%

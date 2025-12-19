@@ -1,0 +1,6 @@
+
+fn test |a, b| {
+	[b, a]
+}
+
+let a = [1,2].test
