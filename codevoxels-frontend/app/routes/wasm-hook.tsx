@@ -96,14 +96,8 @@ export function useWasmInterpreter() {
           'void',
           ['string']
         );
-        console.log("called:", module.cwrap, "result:", parse(code));
 
-        // Parse the result if it's JSON or return as-is
-        try {
-          return JSON.parse("")
-        } catch {
-          return parse(code);
-        }
+        return parse(code);
       } catch (err) {
         console.error('Error running code:', err);
         throw err;

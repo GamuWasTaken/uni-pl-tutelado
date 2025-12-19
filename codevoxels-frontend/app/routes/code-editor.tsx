@@ -29,7 +29,7 @@ export default function CodeEditor({ onRunCode }: CodeEditorProps) {
             <div className="editor-container">
                 <Editor
                         height="100%"
-                        defaultLanguage="javascript"
+                        defaultLanguage="none"
                         defaultValue="// Start typing..."
                         theme="vs-light"
                         onMount={handleEditorDidMount}
