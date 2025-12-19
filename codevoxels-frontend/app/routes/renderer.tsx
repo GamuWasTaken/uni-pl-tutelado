@@ -33,6 +33,10 @@ export default function Renderer() {
     const [voxelWorldState, setVoxelWorldState] = useState<number[][][][]>(initializeVoxelWorld());
     const [isBlockSpacingActive, setIsBlockSpacingActive] = useState(true);
 
+    // Cursor state: position and direction (0=+x, 1=+z, 2=-x, 3=-z)
+    const [cursorPos, setCursorPos] = useState({ x: dimensions.x-1, y: dimensions.y-1, z: dimensions.z-1 });
+    const [cursorDirection, setCursorDirection] = useState(3);
+
     const spacingOffset = isBlockSpacingActive ? 0.1 : 0.0;
     const spacingFactor = (1 + spacingOffset);
 
@@ -98,6 +102,75 @@ export default function Renderer() {
 
     }, []);
 
+    // Control functions for the cursor
+    const forward = () => {
+      setCursorPos(prev => {
+        const directions = [
+          { x: 1, z: 0 },  // 0: +x
+          { x: 0, z: 1 },  // 1: +z
+          { x: -1, z: 0 }, // 2: -x
+          { x: 0, z: -1 }  // 3: -z
+        ];
+        const delta = directions[cursorDirection];
+        const newX = Math.max(0, Math.min(dimensions.x - 1, prev.x + delta.x));
+        const newZ = Math.max(0, Math.min(dimensions.z - 1, prev.z + delta.z));
+        return { ...prev, x: newX, z: newZ };
+      });
+    };
+
+    const turnRight = () => {
+      setCursorDirection(prev => (prev + 1) % 4);
+    };
+
+    const turnLeft = () => {
+      setCursorDirection(prev => (prev - 1 + 4) % 4);
+    };
+
+    const up = () => {
+      setCursorPos(prev => ({
+        ...prev,
+        y: Math.min(dimensions.y - 1, prev.y + 1)
+      }));
+    };
+
+    const down = () => {
+      setCursorPos(prev => ({
+        ...prev,
+        y: Math.max(0, prev.y - 1)
+      }));
+    };
+
+    const setBlock = (r: number = 255, g: number = 255, b: number = 255, a: number = 1) => {
+      setVoxelWorldState(prev => {
+        const newWorld = prev.map(xArr =>
+          xArr.map(yArr =>
+            yArr.map(rgba => [...rgba])
+          )
+        );
+        newWorld[cursorPos.x][cursorPos.y][cursorPos.z] = [r, g, b, a];
+        return newWorld;
+      });
+    };
+
+    // Expose control functions globally
+    useEffect(() => {
+      (window as any).forward = forward;
+      (window as any).turnRight = turnRight;
+      (window as any).turnLeft = turnLeft;
+      (window as any).up = up;
+      (window as any).down = down;
+      (window as any).setBlock = setBlock;
+
+      return () => {
+        delete (window as any).forward;
+        delete (window as any).turnRight;
+        delete (window as any).turnLeft;
+        delete (window as any).up;
+        delete (window as any).down;
+        delete (window as any).setBlock;
+      };
+    }, [forward, turnRight, turnLeft, up, down, setBlock]);
+
     const mountRef = useRef<HTMLDivElement>(null);
   return (<>
     <div className="title-card-container">
@@ -131,6 +204,16 @@ export default function Renderer() {
 
       {/* Render all voxels from the 3D array */}
       {voxelMeshes}
+
+      {/* Cursor cube */}
+      <mesh position={[
+        cursorPos.x * spacingFactor,
+        cursorPos.y * spacingFactor,
+        cursorPos.z * spacingFactor
+      ]} rotation={[0, (cursorDirection * Math.PI) / 2, 0]}>
+        <boxGeometry args={[1.0, 1.0, 1.0]} />
+        <meshBasicMaterial color="red" wireframe={true} />
+      </mesh>
 
       <ambientLight intensity={1.0} />
       <directionalLight position={[0, 0, 5]} color="white" />
