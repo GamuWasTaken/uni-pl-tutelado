@@ -4397,12 +4397,12 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('fetchSettings');
 }
 var ASM_CONSTS = {
-  72888: () => { forward() },  
- 72898: () => { turnRight() },  
- 72910: () => { turnLeft() },  
- 72921: () => { up() },  
- 72926: () => { down() },  
- 72933: ($0, $1, $2, $3, $4) => { setBlock($1,$2,$3,$4) }
+  72856: () => { forward() },  
+ 72866: () => { turnRight() },  
+ 72878: () => { turnLeft() },  
+ 72889: () => { up() },  
+ 72894: () => { down() },  
+ 72901: ($0, $1, $2, $3, $4) => { setBlock($1,$2,$3,$4) }
 };
 var wasmImports = {
   /** @export */

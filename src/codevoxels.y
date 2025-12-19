@@ -86,6 +86,7 @@ EXPR
   | BLOCK
   | FUNC
   | BIND
+  | error { $$ = Ast_lit(@error, Ints_empty()); }
 ;
 
 COMP_OP
@@ -106,6 +107,7 @@ SUM_OP
 VAL_LIST
   : SUM[head] { $$ = Childs_of_single($head); }
   | VAL_LIST[tail] comma SUM[head] { Childs_push(&$tail, $head); $$ = $tail; }
+  | VAL_LIST[tail] comma error { $$ = $tail; }
 ;
 
 SIMP
@@ -113,31 +115,24 @@ SIMP
   | value   { $$ = Ast_lit(@$, $value); }
   | lbrack rbrack { $$ = Ast_lit(@$, Ints_empty()); }
   | lbrack VAL_LIST[tail] rbrack { $$ = Ast_val(@$, $tail); }
-  | lbrack error rbrack
-    {
-      $$ = Ast_lit(@error, Ints_empty());
-      yyerror(&$$, "Unexpected value in literal");
-    }
 ;
 
 CALL
-  : SIMP[head] {}
-  | CALL[head] dot name { $$ = Ast_call(@$, $head, $name); }
-  | error dot name
-    {
-      $$ = Ast_lit(@error, Ints_empty());
-      yyerror(&$$, "Unexpected value in function call");
-    }
+  : SIMP[args] {}
+  | CALL[args] dot name { $$ = Ast_call(@$, $args, $name); }
+  | CALL[args] dot error { $$ = $args; }
 ;
 
 MUL
   : CALL[head] {}
   | MUL[head] MUL_OP[op] CALL[tail] { $$ = Ast_op(@$, $head, $op, $tail); }
+  | MUL[head] MUL_OP error{ $$ = $head; }
 ;
 
 SUM
   : MUL[head] {}
   | SUM[head] SUM_OP[op] MUL[tail] { $$ = Ast_op(@$, $head, $op, $tail); }
+  | SUM[head] SUM_OP error { $$ = $head; }
 ;
 
 COMP
@@ -161,18 +156,18 @@ BLOCK
 NAME_LIST
   : name { $$ = Strs_of_single($name); }
   | NAME_LIST[tail] comma name[head] { Strs_push(&$tail, $head); $$ = $tail; }
+  | NAME_LIST[tail] comma error { $$ = $tail; }
 ;
 
 PAT
   : NAME_LIST[list]
-    {
-      $$ = (Pat) { .names = $list, .rest = false };
-    }
+    { $$ = (Pat) { .names = $list, .rest = false }; }
   | NAME_LIST[list] comma rest name[last]
     {
       Strs_push(&$list, $last);
       $$ = (Pat) { .names = $list, .rest = true };
     }
+  | NAME_LIST[list] comma rest error { $$ = (Pat) { .names = $list, .rest = true }; }
   | rest name
     {
       Strs list = Strs_of_single($name);
@@ -182,6 +177,11 @@ PAT
 
 FUNC
   : fn name line PAT[pat] line BLOCK[body] { $$ = Ast_fn(@$, $name, $pat, $body); }
+  | fn name line error line BLOCK[body]
+    {
+      Pat pat = (Pat) { .names = Strs_empty(), .rest = false };
+      $$ = Ast_fn(@$, $name, pat, $body);
+    }
   | fn name BLOCK[body]
     {
       Pat pat = (Pat) { .names = Strs_empty(), .rest = false };
