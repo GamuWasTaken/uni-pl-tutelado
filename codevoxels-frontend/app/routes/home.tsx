@@ -4,6 +4,7 @@ import { Editor } from "@monaco-editor/react";
 import Renderer from "./renderer";
 import TopBar from "./topbar";
 import CodeEditor from "./code-editor";
+import "./home.css"
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,9 +15,16 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   return  <>
+  
   <TopBar/>
-  <Renderer/>
-  <CodeEditor>
-  </CodeEditor>
+  <div className="home-content-container">
+    <div id="editor-window-container">
+      <CodeEditor>
+      </CodeEditor>
+    </div>
+    <div id="renderer-container">
+      <Renderer/>
+    </div>
+  </div>
   </> 
 }

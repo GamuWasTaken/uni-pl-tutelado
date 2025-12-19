@@ -1,20 +1,15 @@
-.editor-container {
-    height: 50vh;
+.home-content-container{
+    display:grid;
+    grid-template-columns: 50%;
+    grid-template-rows: 100%;
+    gap: 0.5rem;
+    height: 90vh;
 }
 
-.title-card-container {
-    height: 40vh;
-    width: 100%;
-    background-color: skyblue;
-    color:white;
-    font-weight: bold;
-    border-radius: 15px;
-    box-shadow: 5px 5px 10px 3px #0005;
+#renderer-container{
+    grid-column-start: 2;
+    grid-column-end: 2;
 }
-
-.title-bar{
-    display:flex;
-    padding: 10px 10px;
-    background-color: rgb(30, 191, 255);
-    border-radius: 15px 15px 0px 0px;
+#editor-window-container{
+    height: 100%;
 }

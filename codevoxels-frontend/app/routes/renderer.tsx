@@ -194,40 +194,38 @@ export default function Renderer() {
           </div>
           </span>
       </div>
-    <Canvas camera={{ position: [center[0] + 15, center[1] + 15, center[2] + 15], fov: 50 }}>
-      {/* Wireframe cube delimiting the world space */}
-      <lineSegments position={center}>
-        <edgesGeometry args={[
-          new THREE.BoxGeometry(
-            dimensions.x * spacingFactor,
-            dimensions.y * spacingFactor, 
-            dimensions.z * spacingFactor
-          ) 
-        ]} />
-        <lineBasicMaterial color="white" />
-      </lineSegments>
-
-      {/* Render all voxels from the 3D array */}
-      {voxelMeshes}
-
-      {/* Cursor cube */}
-      <mesh position={[
-        cursorPos.x * spacingFactor,
-        cursorPos.y * spacingFactor,
-        cursorPos.z * spacingFactor
-      ]} rotation={[0, (cursorDirection * Math.PI) / 2, 0]}>
-        <VoxelBot />
-      </mesh>
-
-      <ambientLight intensity={1.0} />
-      <directionalLight position={[0, 0, 5]} color="white" />
-      <OrbitControls target={center} />
-
-      {/* XYZ Gizmo in corner */}
-      <GizmoHelper alignment="top-right" margin={[80, 80]}>
-        <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="white" />
-      </GizmoHelper>
-    </Canvas>
+    <div className="canvas-container">
+      <Canvas camera={{ position: [center[0] + 15, center[1] + 15, center[2] + 15], fov: 50 }}>
+        {/* Wireframe cube delimiting the world space */}
+        <lineSegments position={center}>
+          <edgesGeometry args={[
+            new THREE.BoxGeometry(
+              dimensions.x * spacingFactor,
+              dimensions.y * spacingFactor,
+              dimensions.z * spacingFactor
+            )
+          ]} />
+          <lineBasicMaterial color="white" />
+        </lineSegments>
+        {/* Render all voxels from the 3D array */}
+        {voxelMeshes}
+        {/* Cursor cube */}
+        <mesh position={[
+          cursorPos.x * spacingFactor,
+          cursorPos.y * spacingFactor,
+          cursorPos.z * spacingFactor
+        ]} rotation={[0, (cursorDirection * Math.PI) / 2, 0]}>
+          <VoxelBot />
+        </mesh>
+        <ambientLight intensity={1.0} />
+        <directionalLight position={[0, 0, 5]} color="white" />
+        <OrbitControls target={center} />
+        {/* XYZ Gizmo in corner */}
+        <GizmoHelper alignment="top-right" margin={[80, 80]}>
+          <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="white" />
+        </GizmoHelper>
+      </Canvas>
+    </div>
     </div>
   </>
   )

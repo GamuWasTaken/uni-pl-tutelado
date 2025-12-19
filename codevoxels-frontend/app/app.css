@@ -2,9 +2,9 @@
     font-family: 'DM Sans';
     src: url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 }
-html {    height: 100%;
-    width: 100%;
-    box-sizing: border-box;
+html, body {
+    display: flex;
+    flex-direction: column;
     font-family: 'DM Sans', 'Helvetica', 'Arial', sans-serif;
     background-color: skyblue;
 }

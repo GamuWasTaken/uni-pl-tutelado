@@ -1,11 +1,11 @@
 .title-card-container {
-    height: 40vh;
-    width: 100%;
     background-color: skyblue;
+    position: relative;
     color:white;
     font-weight: bold;
     border-radius: 15px;
     box-shadow: 5px 5px 10px 3px #0005;
+    height: 100%;
 }
 
 .title-bar{

@@ -1,11 +1,6 @@
-#canvas-container {
-    height: 40vh;
+.canvas-container {
+    height: 95%;
     width: 100%;
-    background-color: skyblue;
-    color:white;
-    font-weight: bold;
-    border-radius: 15px;
-    box-shadow: 5px 5px 10px 3px #0005;
 }
 
 .output-title-bar{
