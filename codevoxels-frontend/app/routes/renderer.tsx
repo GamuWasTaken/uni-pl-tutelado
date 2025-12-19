@@ -164,6 +164,7 @@ export default function Renderer() {
         newWorld[cursorPos.x][cursorPos.y][cursorPos.z] = [r, g, b, a];
         return newWorld;
       });
+      console.log("Putting block");
     };
 
     // Expose control functions globally
