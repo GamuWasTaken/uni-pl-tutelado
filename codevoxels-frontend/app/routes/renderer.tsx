@@ -7,7 +7,7 @@ import './renderer.css';
 import './global.css';
 
 function VoxelBot() {
-  const { scene } = useGLTF('/voxelbot.glb');
+  const { scene } = useGLTF(`${import.meta.env.BASE_URL}voxelbot.glb`);
   return <primitive object={scene} position={[0.0,-0.5,0.0]} scale={0.6} />;
 }
 

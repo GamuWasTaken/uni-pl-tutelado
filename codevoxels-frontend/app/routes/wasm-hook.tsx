@@ -35,7 +35,7 @@ export function useWasmInterpreter() {
           (window as any).Module = {
             locateFile: (path: string) => {
               if (path.endsWith('.wasm')) {
-                return '/interpreter/codevoxels.wasm';
+                return `${import.meta.env.BASE_URL}interpreter/codevoxels.wasm`;
               }
               return path;
             },
@@ -54,7 +54,7 @@ export function useWasmInterpreter() {
 
           // Now load the script
           const script = document.createElement('script');
-          script.src = '/interpreter/codevoxels.js';
+          script.src = `${import.meta.env.BASE_URL}interpreter/codevoxels.js`;
           script.async = true;
           script.onerror = () => reject(new Error('Failed to load WebAssembly module'));
           document.body.appendChild(script);
