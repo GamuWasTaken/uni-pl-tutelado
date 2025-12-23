@@ -1,2 +1,5 @@
 .vite
 .vscode
+dist
+codevoxels-frontend/dist
+codevoxels-frontend/dist/*
