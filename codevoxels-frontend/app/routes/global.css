@@ -6,6 +6,7 @@
     border-radius: 15px;
     box-shadow: 5px 5px 10px 3px #0005;
     height: 100%;
+    overflow: hidden;
 }
 
 .title-bar{
@@ -13,4 +14,11 @@
     padding: 10px 10px;
     background-color: rgb(30, 191, 255);
     border-radius: 15px 15px 0px 0px;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 40px;
+}
+
+@media screen (min-width: 1024px) {
+    
 }

@@ -6,7 +6,7 @@ html, body {
     display: flex;
     flex-direction: column;
     font-family: 'DM Sans', 'Helvetica', 'Arial', sans-serif;
-    background-color: skyblue;
+    background: linear-gradient( skyblue);
 }
 
 button {

@@ -24,7 +24,7 @@ export default function CodeEditor({ onRunCode }: CodeEditorProps) {
     <div className="title-card-container">
         <div className="title-bar">
         <span>Editor</span>
-        <button id="run-button" onClick={handleRunClick}><div id="run-button-text">Run!</div></button>
+            <button id="run-button" onClick={handleRunClick}><div id="run-button-text">Run!</div></button>
         </div>
             <div className="editor-container">
                 <Editor
