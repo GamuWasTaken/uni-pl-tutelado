@@ -3,10 +3,10 @@
     width: 100%;
 }
 
-.output-title-bar{
-    display:flex;
-    padding: 10px 10px;
-    background-color: rgb(30, 191, 255);
-    border-radius: 15px 15px 0px 0px;
-    justify-content: space-between;
+#output-title-bar{
+    background-color: transparent;
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 10;
 }

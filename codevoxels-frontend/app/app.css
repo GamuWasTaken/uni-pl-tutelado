@@ -3,10 +3,12 @@
     src: url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 }
 html, body {
-    display: flex;
-    flex-direction: column;
     font-family: 'DM Sans', 'Helvetica', 'Arial', sans-serif;
     background: linear-gradient( skyblue);
+    height: 96%;
+    box-sizing: border-box;
+    padding:0;
+
 }
 
 button {
@@ -27,3 +29,4 @@ button:active{
     filter: brightness(0.6);
     transition: 0.2s;
 }
+

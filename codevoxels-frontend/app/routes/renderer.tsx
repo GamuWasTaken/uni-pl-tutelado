@@ -218,7 +218,7 @@ export default function Renderer() {
   return (<>
     <div className="title-card-container">
       <div className="renderer-header">
-          <span className="title-bar">
+          <span className="title-bar" id="output-title-bar">
             Output
           <div className="block-spacing-toggle">
             <input type="checkbox"

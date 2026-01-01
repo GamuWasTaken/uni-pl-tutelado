@@ -1,9 +1,10 @@
 .editor-container{
-    height: 95%;
+    height: 90vh;
+    width: 100%;
+    min-height: 0;
 }
-#run-button{
-    
-}
+
+
 #run-button-text::before{
     content: "▶";
     margin-right: 0.3em;
